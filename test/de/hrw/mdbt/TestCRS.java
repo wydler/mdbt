@@ -1,8 +1,6 @@
 package de.hrw.mdbt;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.After;
 import org.junit.AfterClass;
