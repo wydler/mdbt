@@ -61,10 +61,6 @@ public class Branch {
 		return vehicles;
 	}
 
-	protected void setVehicles(ArrayList<Vehicle> vehicles) {
-		this.vehicles = vehicles;
-		//TODO: remove link from Vehicles
-	}
 	protected void addVehicle(Vehicle vehicle) {
 		this.vehicles.add(vehicle);
 	}
