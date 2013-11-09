@@ -1,4 +1,4 @@
-package de.hrw.mdbt.model.vehicle;
+package de.hrw.mdbt.model;
 
 public class Model {
 	private String manufacturer;

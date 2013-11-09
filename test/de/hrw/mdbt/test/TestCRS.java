@@ -1,4 +1,4 @@
-package de.hrw.mdbt;
+package de.hrw.mdbt.test;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import com.db4o.ObjectContainer;
 import com.db4o.config.EmbeddedConfiguration;
+
+import de.hrw.mdbt.CRS;
 
 public class TestCRS {
 

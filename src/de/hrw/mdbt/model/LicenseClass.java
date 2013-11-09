@@ -1,4 +1,4 @@
-package de.hrw.mdbt.model.customer;
+package de.hrw.mdbt.model;
 
 public class LicenseClass {
 	private String abbreviation;

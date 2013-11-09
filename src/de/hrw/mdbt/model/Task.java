@@ -1,4 +1,4 @@
-package de.hrw.mdbt.model.employee;
+package de.hrw.mdbt.model;
 
 public class Task {
 	private String name;

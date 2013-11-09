@@ -1,9 +1,9 @@
-package de.hrw.mdbt.model.employee;
+package de.hrw.mdbt.model;
 
 import java.util.ArrayList;
 
 import de.hrw.mdbt.model.Branch;
-import de.hrw.mdbt.model.customer.Person;
+import de.hrw.mdbt.model.Person;
 
 public class Employee extends Person {
 	private ArrayList<Task> tasks;
