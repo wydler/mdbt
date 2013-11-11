@@ -172,19 +172,19 @@ public class BranchTest {
 	}
 
 	@Test
-	public void testStoreNullOpeningTimeFails() {
+	public void testStoreNullOpeningTime() {
 		assertEquals(0,db.query(Branch.class).size());
 		b.setOpeningTime(null);
 		db.store(b);
-		assertEquals(0,db.query(Branch.class).size());
+		assertEquals(1,db.query(Branch.class).size());
 	}
 
 	@Test
-	public void testStoreNullClosingTimeFails() {
+	public void testStoreNullClosingTime() {
 		assertEquals(0,db.query(Branch.class).size());
 		b.setClosingTime(null);
 		db.store(b);
-		assertEquals(0,db.query(Branch.class).size());
+		assertEquals(1,db.query(Branch.class).size());
 	}
 
 	@Test
