@@ -109,6 +109,9 @@ public class BranchTest {
 		assertEquals(ot, b.getOpeningTime());
 		b.setOpeningTime(INITIAL_OPENINGTIME);
 		assertEquals(INITIAL_OPENINGTIME, b.getOpeningTime());
+		
+		exception.expect(IllegalArgumentException.class);
+		b.setOpeningTime(Time.valueOf("4:59:0"));
 	}
 
 	@Test

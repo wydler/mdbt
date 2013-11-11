@@ -11,6 +11,8 @@ import de.hrw.mdbt.model.Address;
 import de.hrw.mdbt.model.Vehicle;
 
 public class Branch {
+	private static final Time MIN_OPENINGTIME = Time.valueOf("5:0:0");
+	
 	private boolean aboutToDelete = false;
 
 	private String name;
@@ -45,6 +47,9 @@ public class Branch {
 		return openingTime;
 	}
 	public void setOpeningTime(Time opening) {
+		if(opening != null && opening.before(MIN_OPENINGTIME)) {
+			throw new IllegalArgumentException("Opening time invalid!");
+		}
 		this.openingTime = opening;
 	}
 	public Time getClosingTime() {
@@ -85,12 +90,7 @@ public class Branch {
 			return false;
 		if (this.phone == null) 
 			return false;
-		if (this.address == null)
-			return false;
-		if (this.openingTime == null)
-			return false;
-		if (this.closingTime == null)
-			return false;
+
 		return true;
 	}
 
