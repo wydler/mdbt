@@ -5,6 +5,7 @@
 *.war
 *.ear
 *.yap
+*.db4o
 
 !lib/*
 
