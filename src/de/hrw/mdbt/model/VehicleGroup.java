@@ -3,9 +3,13 @@ package de.hrw.mdbt.model;
 import java.util.Date;
 import java.util.ArrayList;
 
+import com.db4o.ObjectContainer;
+
 import de.hrw.mdbt.model.Model;
 
 public class VehicleGroup {
+	private boolean aboutToDelete = false;
+
 	private int power;
 	private String fuelType;
 	private Date purchaseDate;
@@ -80,5 +84,43 @@ public class VehicleGroup {
 	}
 	protected void removeVehicle(Vehicle vehicle) {
 		this.vehicles.remove(vehicle);
+	}
+
+	private boolean checkConstraints() {
+		//HACK: prevent inserts/updates during objectOnDelete
+		if (aboutToDelete)
+			return false;
+
+		if (this.power < 0)
+			return false;
+		if (this.fuelType == null) 
+			return false;
+		if (this.model == null)
+			return false;
+		if (this.priceClass == null)
+			return false;
+		return true;
+	}
+
+	public boolean objectCanNew(ObjectContainer db) {
+		return checkConstraints();
+	}
+
+	public boolean objectCanUpdate(ObjectContainer db) {
+		return checkConstraints();
+	}
+
+	public void objectOnDelete(ObjectContainer db) {
+		aboutToDelete = true;
+		//HACK: need clone - vehicle could call removeVehicle and modify this list while iterating over it in this method
+		@SuppressWarnings("unchecked")
+		ArrayList<Vehicle> vehiclesToDelete = (ArrayList<Vehicle>) vehicles.clone();
+		for (Vehicle v : vehiclesToDelete) {
+			if (v != null)
+			{
+				db.activate(v, 1);
+				db.delete(v);
+			}
+		}
 	}
 }

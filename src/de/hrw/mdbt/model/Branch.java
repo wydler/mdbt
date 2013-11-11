@@ -69,8 +69,7 @@ public class Branch {
 		this.vehicles.remove(vehicle);
 	}
 
-	private boolean checkConstraints()
-	{
+	private boolean checkConstraints() {
 		//HACK: prevent inserts/updates during objectOnDelete
 		if (aboutToDelete)
 			return false;

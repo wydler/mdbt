@@ -3,6 +3,8 @@ package de.hrw.mdbt.model;
 import java.util.ArrayList;
 
 import com.db4o.ObjectContainer;
+import com.db4o.config.CommonConfigurationProvider;
+import com.db4o.constraints.UniqueFieldValueConstraint;
 
 import de.hrw.mdbt.model.Branch;
 
@@ -68,9 +70,12 @@ public class Vehicle {
 	public void setReports(ArrayList<Report> reports) {
 		this.reports = reports;
 	}
+	
+	public static void configure( CommonConfigurationProvider config ) {
+		config.common().add(new UniqueFieldValueConstraint(Vehicle.class, "licenseNumber"));
+	}
 
-	private boolean checkConstraints()
-	{
+	private boolean checkConstraints() {
 		if (this.licenseNumber == null)
 			return false;
 		if (this.insuranceNumber == null) 

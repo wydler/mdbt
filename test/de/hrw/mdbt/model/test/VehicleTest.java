@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Time;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,9 +16,12 @@ import org.junit.Test;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
+import com.db4o.config.EmbeddedConfiguration;
 
 import de.hrw.mdbt.model.Address;
 import de.hrw.mdbt.model.Branch;
+import de.hrw.mdbt.model.Model;
+import de.hrw.mdbt.model.PriceClass;
 import de.hrw.mdbt.model.Vehicle;
 import de.hrw.mdbt.model.VehicleGroup;
 
@@ -33,6 +38,9 @@ public class VehicleTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		Files.deleteIfExists(Paths.get(DB_TESTFILE));
+		EmbeddedConfiguration config;
+		config = Db4oEmbedded.newConfiguration();
+		Vehicle.configure( config );
 		db = Db4oEmbedded.openFile(DB_TESTFILE);
 	}
 
@@ -44,7 +52,11 @@ public class VehicleTest {
 	@Before
 	public void setUp() throws Exception {
 		b = new Branch("myBranch",new Address(), Time.valueOf("9:0:0"), Time.valueOf("17:0:0"),"0123456789");
-		vg = new VehicleGroup();
+		Calendar c = new GregorianCalendar();
+	    c.set(Calendar.DAY_OF_WEEK, 1);
+	    c.set(Calendar.MONTH, 1);
+	    c.set(Calendar.YEAR, 2013);
+	    vg = new VehicleGroup(100, "Diesel", c.getTime(), "Blau", new Model(), new PriceClass());
 		v = new Vehicle("RV-DB-40","42",1,b,vg);
 	}
 
@@ -54,6 +66,35 @@ public class VehicleTest {
 	}
 
 	//TODO: add tests for getters/setters
+
+	@Test
+	public void testStoreNegativeActualKmFail() {
+		assertEquals(0,db.query(Branch.class).size());
+		assertEquals(0,db.query(Vehicle.class).size());
+		assertEquals(0,db.query(VehicleGroup.class).size());
+		v.setActualKm(-1000);
+		db.store(v);
+		assertEquals(0,db.query(Branch.class).size());
+		assertEquals(0,db.query(Vehicle.class).size());
+		assertEquals(0,db.query(VehicleGroup.class).size());
+	}
+
+	@Test
+	public void testStoreLicenseNumberUnique() {
+		assertEquals(0,db.query(Vehicle.class).size());
+		assertEquals(0,db.query(VehicleGroup.class).size());
+		b = new Branch("myBranch",new Address(), Time.valueOf("9:0:0"), Time.valueOf("17:0:0"),"0123456789");
+		Calendar c = new GregorianCalendar();
+	    c.set(Calendar.DAY_OF_WEEK, 1);
+	    c.set(Calendar.MONTH, 1);
+	    c.set(Calendar.YEAR, 2013);
+	    vg = new VehicleGroup(100, "Diesel", c.getTime(), "Blau", new Model(), new PriceClass());
+		new Vehicle("RV-TT-0001","1",1,b,vg);
+		new Vehicle("RV-TT-0001","2",10,b,vg);
+		db.store(vg);
+		assertEquals(1,db.query(Vehicle.class).size());
+		assertEquals(1,db.query(VehicleGroup.class).size());
+	}
 
 	@Test
 	public void testStore() {

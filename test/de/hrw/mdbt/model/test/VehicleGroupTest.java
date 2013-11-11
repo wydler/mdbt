@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -16,8 +17,11 @@ import org.junit.Test;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 
+import de.hrw.mdbt.model.Address;
+import de.hrw.mdbt.model.Branch;
 import de.hrw.mdbt.model.Model;
 import de.hrw.mdbt.model.PriceClass;
+import de.hrw.mdbt.model.Vehicle;
 import de.hrw.mdbt.model.VehicleGroup;
 
 public class VehicleGroupTest {
@@ -81,10 +85,14 @@ public class VehicleGroupTest {
 	@Test
 	public void testDelete() {
 		assertEquals(0,db.query(VehicleGroup.class).size());
+		Address a = new Address();
+		Branch b = new Branch("myBranch", a, Time.valueOf("9:0:0"), Time.valueOf("17:0:0"), "0123456789");
+		new Vehicle("RV-TT-0001","1",1,b,vg);
 		db.store(vg);
 		assertEquals(1,db.query(VehicleGroup.class).size());
+		assertEquals(1,db.query(Vehicle.class).size());
 		db.delete(vg);
 		assertEquals(0,db.query(VehicleGroup.class).size());
+		assertEquals(0,db.query(Vehicle.class).size());
 	}
-
 }
