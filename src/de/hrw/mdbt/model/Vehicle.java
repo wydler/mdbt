@@ -55,7 +55,11 @@ public class Vehicle {
 	}
 
 	public void setVehicleGroup(VehicleGroup vehicleGroup) {
+		if (this.vehicleGroup != null)
+			this.vehicleGroup.removeVehicle(this);
 		this.vehicleGroup = vehicleGroup;
+		if (vehicleGroup != null)
+			vehicleGroup.addVehicle(this);
 	}
 
 	public ArrayList<Report> getReports() {

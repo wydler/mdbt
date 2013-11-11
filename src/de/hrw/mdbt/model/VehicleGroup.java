@@ -14,6 +14,18 @@ public class VehicleGroup {
 	private PriceClass priceClass;
 	private ArrayList<Vehicle> vehicles = new ArrayList<Vehicle>();
 	private ArrayList<Equipment> equipment = new ArrayList<Equipment>();
+	
+	public VehicleGroup() {
+	}
+
+	public VehicleGroup(int power, String fuelType, Date purchaseDate, String color, Model model, PriceClass priceClass) {
+		setPower(power);
+		setFuelType(fuelType);
+		setPurchaseDate(purchaseDate);
+		setColor(color);
+		setModel(model);
+		setPriceClass(priceClass);
+	}
 
 	public int getPower() {
 		return power;
