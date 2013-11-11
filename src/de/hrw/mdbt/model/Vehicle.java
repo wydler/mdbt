@@ -72,6 +72,7 @@ public class Vehicle {
 	}
 	
 	public static void configure( CommonConfigurationProvider config ) {
+		config.common().objectClass(Vehicle.class).objectField("licenseNumber").indexed(true);
 		config.common().add(new UniqueFieldValueConstraint(Vehicle.class, "licenseNumber"));
 	}
 

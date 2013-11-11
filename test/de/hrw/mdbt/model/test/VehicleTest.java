@@ -41,7 +41,7 @@ public class VehicleTest {
 		EmbeddedConfiguration config;
 		config = Db4oEmbedded.newConfiguration();
 		Vehicle.configure( config );
-		db = Db4oEmbedded.openFile(DB_TESTFILE);
+		db = Db4oEmbedded.openFile(config, DB_TESTFILE);
 	}
 
 	@AfterClass
