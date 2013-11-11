@@ -104,9 +104,8 @@ public class Branch {
 
 	public void objectOnDelete(ObjectContainer db) {
 		aboutToDelete = true;
-		//HACK: need clone - vehicle could call removeVehicle and modify this list while iterating over it in this method
-		@SuppressWarnings("unchecked")
-		ArrayList<Vehicle> vehiclesToDelete = (ArrayList<Vehicle>) vehicles.clone();
+
+		ArrayList<Vehicle> vehiclesToDelete = new ArrayList<Vehicle>(vehicles);
 		for (Vehicle v : vehiclesToDelete) {
 			if (v != null)
 			{
