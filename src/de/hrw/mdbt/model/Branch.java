@@ -4,6 +4,8 @@ import java.sql.Time;
 import java.util.ArrayList;
 
 import com.db4o.ObjectContainer;
+import com.db4o.config.CommonConfigurationProvider;
+import com.db4o.constraints.UniqueFieldValueConstraint;
 
 import de.hrw.mdbt.model.Address;
 import de.hrw.mdbt.model.Vehicle;
@@ -63,6 +65,11 @@ public class Branch {
 
 	protected void addVehicle(Vehicle vehicle) {
 		this.vehicles.add(vehicle);
+	}
+	
+	public static void configure( CommonConfigurationProvider config ) {
+		config.common().objectClass(Branch.class).objectField("phone").indexed(true);
+		config.common().add(new UniqueFieldValueConstraint(Branch.class, "phone"));
 	}
 	
 	protected void removeVehicle(Vehicle vehicle) {

@@ -5,14 +5,20 @@ import static org.junit.Assert.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Time;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
+import com.db4o.config.EmbeddedConfiguration;
+import com.db4o.constraints.UniqueFieldValueConstraintViolationException;
+
 import de.hrw.mdbt.model.Address;
 import de.hrw.mdbt.model.Branch;
 import de.hrw.mdbt.model.Vehicle;
@@ -31,11 +37,16 @@ public class BranchTest {
 
 	private Branch b;
 	private Address a;
+	
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		Files.deleteIfExists(Paths.get(DB_TESTFILE));
-		db = Db4oEmbedded.openFile(DB_TESTFILE);
+		EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
+		Branch.configure( config );
+		db = Db4oEmbedded.openFile(config, DB_TESTFILE);
 	}
 
 	@AfterClass
@@ -136,6 +147,17 @@ public class BranchTest {
 		assertEquals(0,db.query(Branch.class).size());
 		db.store(b);
 		assertEquals(1,db.query(Branch.class).size());
+	}
+	
+	@Test
+	public void testStoreDuplicate() {
+		db.store(b);
+		
+		Branch b2 = new Branch(INITIAL_NAME, a, INITIAL_OPENINGTIME, INITIAL_CLOSINGTIME, "0123456789");
+		db.store(b2);
+		
+		exception.expect(UniqueFieldValueConstraintViolationException.class);
+		db.commit();
 	}
 
 	@Test
