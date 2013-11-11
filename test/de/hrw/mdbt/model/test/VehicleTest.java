@@ -8,11 +8,15 @@ import java.sql.Time;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
@@ -35,6 +39,9 @@ public class VehicleTest {
 	private Branch b;
 	private Vehicle v;
 	private VehicleGroup vg;
+	
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -53,10 +60,7 @@ public class VehicleTest {
 	@Before
 	public void setUp() throws Exception {
 		b = new Branch("myBranch",new Address(), Time.valueOf("9:0:0"), Time.valueOf("17:0:0"),"0123456789");
-		Calendar c = new GregorianCalendar();
-	    c.set(Calendar.DAY_OF_WEEK, 1);
-	    c.set(Calendar.MONTH, 1);
-	    c.set(Calendar.YEAR, 2013);
+		Calendar c = new GregorianCalendar(2013, 1, 1);
 	    vg = new VehicleGroup(100, "Diesel", c.getTime(), "Blau", new Model(), new PriceClass());
 		v = new Vehicle("RV-DB-40","42",1,b,vg);
 	}
@@ -85,34 +89,15 @@ public class VehicleTest {
 		assertEquals(0,db.query(Vehicle.class).size());
 		assertEquals(0,db.query(VehicleGroup.class).size());
 		b = new Branch("myBranch",new Address(), Time.valueOf("9:0:0"), Time.valueOf("17:0:0"),"0123456789");
-		Calendar c = new GregorianCalendar();
-	    c.set(Calendar.DAY_OF_WEEK, 1);
-	    c.set(Calendar.MONTH, 1);
-	    c.set(Calendar.YEAR, 2013);
+		Calendar c = new GregorianCalendar(2013, 1, 1);
 	    vg = new VehicleGroup(100, "Diesel", c.getTime(), "Blau", new Model(), new PriceClass());
 		new Vehicle("RV-TT-0001","1",1,b,vg);
 		new Vehicle("RV-TT-0001","2",10,b,vg);
 		db.store(vg);
 		//HACK: everything below in this function ;)
 		// we need to commit as the unique constraint is checked when committing the change
-		try {
-			db.commit();
-		} catch(UniqueFieldValueConstraintViolationException e)
-		{
-			// exception thrown as expected - return
-			return;
-		} finally {
-			// do cleanups manually - usually no test commits changes - but this one does
-			try {
-				tearDown();
-				tearDownAfterClass();
-				setUpBeforeClass();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		// this is only reached if exception is not thrown
-		fail("Exception expected!");
+		exception.expect(UniqueFieldValueConstraintViolationException.class);
+		db.commit();
 	}
 
 	@Test

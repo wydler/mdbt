@@ -45,10 +45,7 @@ public class VehicleGroupTest {
 
 	@Before
 	public void setUp() throws Exception {
-		Calendar c = new GregorianCalendar();
-	    c.set(Calendar.DAY_OF_WEEK, 1);
-	    c.set(Calendar.MONTH, 1);
-	    c.set(Calendar.YEAR, 2013);
+		Calendar c = new GregorianCalendar(2013, 1, 1);
 		vg = new VehicleGroup(142, "Nuklearer Abfall", c.getTime(), "Blau", new Model(), new PriceClass());
 	}
 
@@ -68,14 +65,8 @@ public class VehicleGroupTest {
 
 	@Test
 	public void testStoreMultipleVehicleGroups() {
-		Calendar c1 = new GregorianCalendar();
-	    c1.set(Calendar.DAY_OF_WEEK, 1);
-	    c1.set(Calendar.MONTH, 1);
-	    c1.set(Calendar.YEAR, 2013);
-		Calendar c2 = new GregorianCalendar();
-	    c2.set(Calendar.DAY_OF_WEEK, 2);
-	    c2.set(Calendar.MONTH, 1);
-	    c2.set(Calendar.YEAR, 2012);
+		Calendar c1 = new GregorianCalendar(2013, 1, 1);
+		Calendar c2 = new GregorianCalendar(2012, 1, 2);
 		assertEquals(0,db.query(VehicleGroup.class).size());
 		db.store(new VehicleGroup(142, "Nuklearer Abfall", c1.getTime(), "Blau Metallic", new Model(), new PriceClass()));
 		db.store(new VehicleGroup(100, "Diesel", c2.getTime(), "Rot", new Model(), new PriceClass()));
