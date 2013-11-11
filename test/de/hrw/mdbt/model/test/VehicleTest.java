@@ -1,6 +1,6 @@
 package de.hrw.mdbt.model.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.config.EmbeddedConfiguration;
+import com.db4o.constraints.UniqueFieldValueConstraintViolationException;
 
 import de.hrw.mdbt.model.Address;
 import de.hrw.mdbt.model.Branch;
@@ -92,8 +93,26 @@ public class VehicleTest {
 		new Vehicle("RV-TT-0001","1",1,b,vg);
 		new Vehicle("RV-TT-0001","2",10,b,vg);
 		db.store(vg);
-		assertEquals(1,db.query(Vehicle.class).size());
-		assertEquals(1,db.query(VehicleGroup.class).size());
+		//HACK: everything below in this function ;)
+		// we need to commit as the unique constraint is checked when committing the change
+		try {
+			db.commit();
+		} catch(UniqueFieldValueConstraintViolationException e)
+		{
+			// exception thrown as expected - return
+			return;
+		} finally {
+			// do cleanups manually - usually no test commits changes - but this one does
+			try {
+				tearDown();
+				tearDownAfterClass();
+				setUpBeforeClass();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		// this is only reached if exception is not thrown
+		fail("Exception expected!");
 	}
 
 	@Test
