@@ -20,9 +20,6 @@ public class PriceClass {
 	}
 
 	public PriceClass() {
-		this.setFreeKm(0); // set default values
-		this.setPriceDay(0);
-		this.setPriceKm(0);
 //		this.setModels(new ArrayList<Model>());
 	}
 

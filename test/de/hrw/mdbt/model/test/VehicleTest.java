@@ -57,31 +57,49 @@ public class VehicleTest {
 
 	@Test
 	public void testStore() {
+		assertEquals(0,db.query(Branch.class).size());
 		assertEquals(0,db.query(Vehicle.class).size());
+		assertEquals(0,db.query(VehicleGroup.class).size());
 		db.store(v);
+		assertEquals(1,db.query(Branch.class).size());
 		assertEquals(1,db.query(Vehicle.class).size());
+		assertEquals(1,db.query(VehicleGroup.class).size());
 	}
 
 	@Test
 	public void testStoreMultipleVehicles() {
 		assertEquals(0,db.query(Branch.class).size());
 		assertEquals(0,db.query(Vehicle.class).size());
+		assertEquals(0,db.query(VehicleGroup.class).size());
 		new Vehicle("RV-TT-0001","1",1,b,vg);
 		new Vehicle("RV-TT-0002","2",10,b,vg);
 		new Vehicle("RV-TT-0003","3",100,b,vg);
 		new Vehicle("RV-TT-0004","4",1000,b,vg);
 		db.store(b);
 		assertEquals(1,db.query(Branch.class).size());
+		assertEquals(5,db.query(Branch.class).get(0).getVehicles().size());
 		assertEquals(5,db.query(Vehicle.class).size());
+		assertEquals(1,db.query(VehicleGroup.class).size());
+		assertEquals(5,db.query(VehicleGroup.class).get(0).getVehicles().size());
 	}
 
 	@Test
 	public void testDelete() {
+		assertEquals(0,db.query(Branch.class).size());
 		assertEquals(0,db.query(Vehicle.class).size());
+		assertEquals(0,db.query(VehicleGroup.class).size());
 		db.store(v);
+		assertEquals(1,db.query(Branch.class).size());
+		assertEquals(1,db.query(Branch.class).get(0).getVehicles().size());
 		assertEquals(1,db.query(Vehicle.class).size());
+		assertEquals(1,db.query(VehicleGroup.class).size());
+		assertEquals(1,db.query(VehicleGroup.class).get(0).getVehicles().size());
 		db.delete(v);
+		assertEquals(1,db.query(Branch.class).size());
+		assertEquals(0,db.query(Branch.class).get(0).getVehicles().size());
 		assertEquals(0,db.query(Vehicle.class).size());
+		assertEquals(1,db.query(VehicleGroup.class).size());
+		assertEquals(0,db.query(VehicleGroup.class).get(0).getVehicles().size());
 	}
 
 }

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
