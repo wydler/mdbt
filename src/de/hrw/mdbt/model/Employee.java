@@ -1,6 +1,12 @@
 package de.hrw.mdbt.model;
 
 import java.util.ArrayList;
+import java.util.Date;
+
+import com.db4o.ObjectContainer;
+import com.db4o.config.CommonConfigurationProvider;
+import com.db4o.constraints.UniqueFieldValueConstraint;
+import com.db4o.ext.Db4oException;
 
 import de.hrw.mdbt.model.Branch;
 import de.hrw.mdbt.model.Person;
@@ -39,5 +45,22 @@ public class Employee extends Person {
 	}
 	public void setSupervisor(Employee supervisor) {
 		this.supervisor = supervisor;
+	}
+	
+	public static void configure(CommonConfigurationProvider config) {
+		config.common().objectClass(Customer.class).objectField("id").indexed(true);
+		config.common().add(new UniqueFieldValueConstraint(Employee.class, "id"));
+	}
+	
+	public boolean objectCanNew (ObjectContainer container) throws Db4oException {
+		if(super.getEmail() != null)
+			if(!super.getEmail().endsWith("@crc.com")) 
+				throw new Db4oException("E-Mail must end with @crc.com!");
+		return true;
+	}
+
+	public boolean objectCanUpdate (ObjectContainer container) throws Db4oException {
+		if(super.getEmail() == null || super.getEmail().endsWith("@crc.com")) throw new Db4oException("E-Mail must end with @crc.com!");
+		return true;
 	}
 }

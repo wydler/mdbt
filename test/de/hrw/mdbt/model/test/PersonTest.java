@@ -1,14 +1,11 @@
 package de.hrw.mdbt.model.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Time;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -20,22 +17,16 @@ import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.config.EmbeddedConfiguration;
-import com.db4o.constraints.UniqueFieldValueConstraint;
 import com.db4o.constraints.UniqueFieldValueConstraintViolationException;
 import com.db4o.internal.ReflectException;
 
 import de.hrw.mdbt.model.Address;
-import de.hrw.mdbt.model.Branch;
-import de.hrw.mdbt.model.Model;
 import de.hrw.mdbt.model.Person;
 import de.hrw.mdbt.model.Phone;
-import de.hrw.mdbt.model.PriceClass;
-import de.hrw.mdbt.model.Vehicle;
-import de.hrw.mdbt.model.VehicleGroup;
 
 public class PersonTest {
 	
-	private static final String DB_TESTFILE = "VehicleTest.db4o";
+	private static final String DB_TESTFILE = "PersonTest.db4o";
 
 	private static ObjectContainer db;
 	private static Calendar d = Calendar.getInstance();
