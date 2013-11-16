@@ -12,8 +12,8 @@ public class Employee extends Person {
 	private Branch branch;
 	private Employee supervisor;
 
-	public Employee(int id, String name) {
-		super(id, name);
+	public Employee(int id, String lastname) {
+		super(id, lastname);
 	}
 
 	public float getSalary() {

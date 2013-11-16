@@ -7,6 +7,9 @@ public class Customer {
 	private int id;
 	private Date registerDate = GregorianCalendar.getInstance().getTime();
 	private float discount = 0.0f;
+	
+	public Customer() {
+	}
 
 	public Customer(int id) {
 		setId(id);
