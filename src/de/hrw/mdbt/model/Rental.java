@@ -2,13 +2,25 @@ package de.hrw.mdbt.model;
 
 import java.util.Date;
 
+import com.db4o.ObjectContainer;
+import com.db4o.config.CommonConfigurationProvider;
+import com.db4o.ext.Db4oException;
+
 public class Rental {
 	private Date startDate;
 	private Date endDate;
 	private int startKm;
 	private int endKm;
 	private Vehicle vehicle;
+	private Customer customer;
 	private String status;
+	
+	public Rental(Date start, int startKm, Vehicle v, Customer c) {
+		this.startDate = start;
+		this.startKm = startKm;
+		this.vehicle = v;
+		this.customer = c;
+	}
 
 	public Date getStartDate() {
 		return startDate;
@@ -45,5 +57,23 @@ public class Rental {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public Customer getCustomer() {
+		return customer;
+	}
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	
+	public static void configure(CommonConfigurationProvider config) {
+	}
+	
+	public boolean objectCanNew (ObjectContainer container) throws Db4oException {
+		if(this.customer == null) throw new Db4oException("Customer cannot be null!");
+		if(this.startDate == null) throw new Db4oException("Start date cannot be null!");
+		if(this.startKm < 0) throw new Db4oException("Start KM cannot be smaller 0!");
+		if(this.vehicle == null) throw new Db4oException("Vehicle cannot be null!");
+		
+		return true;
 	}
 }
