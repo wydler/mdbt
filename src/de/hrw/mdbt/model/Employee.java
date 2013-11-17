@@ -1,8 +1,6 @@
 package de.hrw.mdbt.model;
 
 import java.util.ArrayList;
-import java.util.Date;
-
 import com.db4o.ObjectContainer;
 import com.db4o.config.CommonConfigurationProvider;
 import com.db4o.constraints.UniqueFieldValueConstraint;
@@ -20,6 +18,14 @@ public class Employee extends Person {
 
 	public Employee(int id, String lastname) {
 		super(id, lastname);
+	}
+
+	public void addTask(Task t) {
+		tasks.add(t);
+	}
+
+	public void removeTask(Task t) {
+		tasks.remove(t);
 	}
 
 	public float getSalary() {

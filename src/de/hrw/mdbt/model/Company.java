@@ -11,6 +11,13 @@ public class Company extends Customer {
 		setName(name);
 	}
 
+	public void addRepresentative(Person p) {
+		representatives.add(p);
+	}
+	public void removeRepresentative(Person p) {
+		representatives.remove(p);
+	}
+
 	public String getName() {
 		return name;
 	}

@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Calendar;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -20,7 +18,6 @@ import com.db4o.internal.ReflectException;
 
 import de.hrw.mdbt.model.Address;
 import de.hrw.mdbt.model.Employee;
-import de.hrw.mdbt.model.Person;
 
 public class EmployeeTest {
 	

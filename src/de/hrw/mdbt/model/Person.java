@@ -15,7 +15,7 @@ public class Person extends Customer {
 	private String lastname;
 	private String salutation;
 	private String title;
-	private Date dob;
+	private Date dateOfBirth;
 	private String email;
 	private String sex;
 	private ArrayList<Phone> numbers = new ArrayList<Phone>();
@@ -41,24 +41,29 @@ public class Person extends Customer {
 		this.lastname = last;
 		this.salutation = sal;
 		this.title = title;
-		this.dob = dob;
+		this.dateOfBirth = dob;
 		this.sex = sex;
 	}
 	
 	public void addAddress(Address adr) {
 		addresses.add(adr);
 	}
-	
 	public void removeAddress(Address adr) {
 		addresses.remove(adr);
 	}
-	
+
 	public void addPhone(Phone ph) {
 		numbers.add(ph);
 	}
-	
 	public void removePhone(Phone ph) {
 		numbers.remove(ph);
+	}
+
+	public void addLicense(LicenseClass lc) {
+		licenses.add(lc);
+	}
+	public void removeLicense(LicenseClass lc) {
+		licenses.remove(lc);
 	}
 
 	public String getFirstname() {
@@ -67,10 +72,10 @@ public class Person extends Customer {
 	public void setFirstname(String name) {
 		this.firstname = name;
 	}
+
 	public String getSecondname() {
 		return secondname;
 	}
-
 	public void setSecondname(String secondname) {
 		this.secondname = secondname;
 	}
@@ -78,7 +83,6 @@ public class Person extends Customer {
 	public String getLastname() {
 		return lastname;
 	}
-
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
@@ -86,7 +90,6 @@ public class Person extends Customer {
 	public String getSalutation() {
 		return salutation;
 	}
-
 	public void setSalutation(String salutation) {
 		this.salutation = salutation;
 	}
@@ -94,30 +97,31 @@ public class Person extends Customer {
 	public String getTitle() {
 		return title;
 	}
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
-	public Date getDob() {
-		return dob;
+	public Date getDateOfBirth() {
+		return dateOfBirth;
 	}
-	public void setDob(Date dob) {
-		this.dob = dob;
+	public void setDateOfBirth(Date dob) {
+		this.dateOfBirth = dob;
 	}
+
 	public String getEmail() {
 		return email;
 	}
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public String getSex() {
 		return sex;
 	}
 	public void setSex(String sex) {
 		this.sex = sex;
 	}
-	
+
 	public static void configure(CommonConfigurationProvider config) {
 		config.common().objectClass(Customer.class).objectField("id").indexed(true);
 		config.common().add(new UniqueFieldValueConstraint(Person.class, "id"));
@@ -126,14 +130,14 @@ public class Person extends Customer {
 	public boolean objectCanNew (ObjectContainer container) throws Db4oException {
 		if (this.lastname == null) throw new Db4oException("A person must have a last name!");
 		Date today = new Date();
-		if (this.dob != null) if (this.dob.after(today)) throw new Db4oException("<dob> must not be in the future!");
+		if (this.dateOfBirth != null) if (this.dateOfBirth.after(today)) throw new Db4oException("<dob> must not be in the future!");
 		return true;
 	}
 
 	public boolean objectCanUpdate (ObjectContainer container) throws Db4oException {
 		if (this.lastname == null) throw new Db4oException("A person must have a last name!");
 		Date today = new Date();
-		if (this.dob != null) if (this.dob.after(today)) throw new Db4oException("<dob> must not be in the future!");
+		if (this.dateOfBirth != null) if (this.dateOfBirth.after(today)) throw new Db4oException("<dob> must not be in the future!");
 		return true;
 	}
 }

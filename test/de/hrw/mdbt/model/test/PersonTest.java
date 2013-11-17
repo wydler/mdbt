@@ -36,7 +36,7 @@ public class PersonTest {
 		Files.deleteIfExists(Paths.get(DB_TESTFILE));
 		EmbeddedConfiguration config;
 		config = Db4oEmbedded.newConfiguration();
-		config.common().objectClass(Person.class).updateDepth(2);
+		config.common().objectClass(Person.class).updateDepth(2);	//TODO: maybe move to Person.configure if Person relies on that 
 		Person.configure( config );
 		db = Db4oEmbedded.openFile(config, DB_TESTFILE);
 	}
