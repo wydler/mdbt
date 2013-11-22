@@ -72,13 +72,13 @@ public class Branch {
 		this.vehicles.add(vehicle);
 	}
 	
-	public static void configure( CommonConfigurationProvider config ) {
-		config.common().objectClass(Branch.class).objectField("phone").indexed(true);
-		config.common().add(new UniqueFieldValueConstraint(Branch.class, "phone"));
-	}
-	
 	protected void removeVehicle(Vehicle vehicle) {
 		this.vehicles.remove(vehicle);
+	}
+
+	public static void configure(CommonConfigurationProvider config) {
+		config.common().objectClass(Branch.class).objectField("phone").indexed(true);
+		config.common().add(new UniqueFieldValueConstraint(Branch.class, "phone"));
 	}
 
 	private boolean checkConstraints() {

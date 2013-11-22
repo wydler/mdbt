@@ -45,7 +45,7 @@ public class BranchTest {
 	public static void setUpBeforeClass() throws Exception {
 		Files.deleteIfExists(Paths.get(DB_TESTFILE));
 		EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
-		Branch.configure( config );
+		Branch.configure(config);
 		db = Db4oEmbedded.openFile(config, DB_TESTFILE);
 	}
 
