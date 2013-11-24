@@ -50,7 +50,7 @@ public class CRSOperations {
 		return createOffer(this.db, b, startDate, endDate, pc);
 	}
 
-	public int createReservation (Customer c, Branch b, VehicleGroup vg, Date startDate, Date endDate) {
+	public boolean createReservation (Customer c, Branch b, VehicleGroup vg, Date startDate, Date endDate) {
 		return createReservation(this.db, c, b, vg, startDate, endDate);
 	}
 
@@ -62,8 +62,10 @@ public class CRSOperations {
 	}
 
 	public static void fillDBDefaults(ObjectContainer db) {
+		LicenseClass l1 = new LicenseClass("Ordinary","lame");
 		Calendar c4 = new GregorianCalendar(2000, 1, 1);
 		Person p1 = new Person(1, "Max", "", "Mad", "?", "", c4.getTime(), "m");
+		p1.addLicense(l1);
 		db.store(p1);
 
 		Company cy1 = new Company(2,"Knight Industries");
@@ -78,7 +80,6 @@ public class CRSOperations {
 		Calendar c1b = new GregorianCalendar(2012, 6, 1);
 		Calendar c1c = new GregorianCalendar(2013, 1, 1);
 		Calendar c1d = new GregorianCalendar(2013, 6, 1);
-		LicenseClass l1 = new LicenseClass("Ordinary","lame");
 		Model m1 = new Model("IKEA","Hans",100,"metric",l1);
 		PriceClass pc1 = new PriceClass("TooCheapToDrive", "Good Luck!", 10, 2, 3);
 		VehicleGroup vg1a = new VehicleGroup(100, "Diesel", c1a.getTime(), "Blue Metallic", m1, pc1);
@@ -129,7 +130,10 @@ public class CRSOperations {
 					for(Rental r : v.getRentals()) {
 						// check next vehicle if any rental overlaps
 						if(r.getStartDate().getTime() <= endDate.getTime() && startDate.getTime() <= r.getEndDate().getTime())
+						{
 							overlap = true;
+							break;
+						}
 					}
 					if(!overlap)
 						return true;
@@ -141,8 +145,37 @@ public class CRSOperations {
 		return result;
 	}
 
-	public static int createReservation(ObjectContainer db, Customer c, Branch b, VehicleGroup vg, Date startDate, Date endDate) {
-		//TODO: implement
-		return 0;
+	public static boolean createReservation(ObjectContainer db, Customer c, Branch b, VehicleGroup vg, Date startDate, Date endDate) {
+		if(c==null || b==null || vg==null || startDate.after(endDate) )
+			return false;
+		boolean licenseOk = false;
+		for(LicenseClass lc : c.getLicenses())
+			if(lc == vg.getModel().getRequiredLicense())
+				licenseOk = true;
+		if(!licenseOk)
+			return false;
+
+		Vehicle selectedVehicle = null;
+		for(Vehicle v : vg.getVehicles()) {
+			if(v.getBranch() != b) continue;
+			boolean overlap = false;
+			for(Rental r : v.getRentals()) {
+				// check next vehicle if any rental overlaps
+				if(r.getStartDate().getTime() <= endDate.getTime() && startDate.getTime() <= r.getEndDate().getTime())
+				{
+					overlap = true;
+					break;
+				}
+			}
+			if(!overlap)
+				selectedVehicle = v;
+		}
+
+		Rental r = new Rental(startDate, endDate, selectedVehicle, c);
+		db.store(r);
+
+		System.out.println(c.toString()+"just rent:\n"+selectedVehicle.toString()+":\n"+r.toString()+"\n");
+
+		return true;
 	}
 }

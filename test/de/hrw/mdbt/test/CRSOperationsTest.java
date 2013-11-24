@@ -18,7 +18,11 @@ import com.db4o.ObjectSet;
 
 import de.hrw.mdbt.CRSOperations;
 import de.hrw.mdbt.model.Branch;
+import de.hrw.mdbt.model.Company;
+import de.hrw.mdbt.model.Customer;
+import de.hrw.mdbt.model.Person;
 import de.hrw.mdbt.model.PriceClass;
+import de.hrw.mdbt.model.Rental;
 import de.hrw.mdbt.model.VehicleGroup;
 
 public class CRSOperationsTest {
@@ -49,6 +53,9 @@ public class CRSOperationsTest {
 	@Test
 	public void testDefaultDBNotEmpty() {
 		assertTrue(ops.getDb().query(Branch.class).size() > 0);
+		assertTrue(ops.getDb().query(Customer.class).size() > 0);
+		assertTrue(ops.getDb().query(Person.class).size() > 0);
+		assertTrue(ops.getDb().query(Company.class).size() > 0);
 	}
 
 	@Test
@@ -123,5 +130,68 @@ public class CRSOperationsTest {
 		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
 
 		assertEquals(0,vgs.size());
+	}
+
+	@Test
+	public void testCreateReservation() {
+		Person pExample = new Person();
+		pExample.setFirstname("Max");
+		pExample.setRegisterDate(null);
+		ObjectSet<Person> ps = ops.getDb().queryByExample(pExample);
+		assertEquals(1,ps.size());
+		Person p = ps.get(0);
+
+		Branch bExample = new Branch();
+		bExample.setName("DefaultBranch");
+		ObjectSet<Branch> bs = ops.getDb().queryByExample(bExample);
+		assertEquals(1,bs.size());
+		Branch b = bs.get(0);
+
+		PriceClass pcExample = new PriceClass();
+		pcExample.setName("TooCheapToDrive");
+		ObjectSet<PriceClass> pcs = ops.getDb().queryByExample(pcExample);
+		assertEquals(1,pcs.size());
+		PriceClass pc = pcs.get(0);
+
+		Calendar start = new GregorianCalendar(2013, 11, 1);
+		Calendar end = new GregorianCalendar(2014, 1, 1);
+
+		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
+		assertEquals(3,vgs.size());
+
+		int numRentals = ops.getDb().query(Rental.class).size();
+
+		boolean ret = ops.createReservation(p, b, vgs.get(0), start.getTime(), end.getTime());
+		assertTrue(ret);
+
+		assertEquals(numRentals+1,ops.getDb().query(Rental.class).size());
+	}
+
+	@Test
+	public void testCreateReservationNullCustomer() {
+		Branch bExample = new Branch();
+		bExample.setName("DefaultBranch");
+		ObjectSet<Branch> bs = ops.getDb().queryByExample(bExample);
+		assertEquals(1,bs.size());
+		Branch b = bs.get(0);
+
+		PriceClass pcExample = new PriceClass();
+		pcExample.setName("TooCheapToDrive");
+		ObjectSet<PriceClass> pcs = ops.getDb().queryByExample(pcExample);
+		assertEquals(1,pcs.size());
+		PriceClass pc = pcs.get(0);
+
+		Calendar start = new GregorianCalendar(2013, 11, 1);
+		Calendar end = new GregorianCalendar(2014, 1, 1);
+
+		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
+		assertEquals(3,vgs.size());
+
+		int numRentals = ops.getDb().query(Rental.class).size();
+
+		boolean ret = ops.createReservation(null, b, vgs.get(0), start.getTime(), end.getTime());
+		assertTrue(!ret);
+
+		assertEquals(numRentals,ops.getDb().query(Rental.class).size());
 	}
 }

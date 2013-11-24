@@ -20,22 +20,20 @@ public class Person extends Customer {
 	private String sex;
 	private ArrayList<Phone> numbers = new ArrayList<Phone>();
 	private ArrayList<Address> addresses = new ArrayList<Address>();
-	private ArrayList<LicenseClass> licenses = new ArrayList<LicenseClass>();
-	
+
 	public Person() {
 		super();
 	}
 
 	public Person(int id, String lastname) {
 		super(id);
-		
+
 		this.lastname = lastname;
 	}
-	
-	public Person(int id, String first, String second, String last, 
-			String sal, String title, Date dob, String sex) {
+
+	public Person(int id, String first, String second, String last, String sal, String title, Date dob, String sex) {
 		super(id);
-		
+
 		this.firstname = first;
 		this.secondname = second;
 		this.lastname = last;
@@ -44,7 +42,7 @@ public class Person extends Customer {
 		this.dateOfBirth = dob;
 		this.sex = sex;
 	}
-	
+
 	public void addAddress(Address adr) {
 		addresses.add(adr);
 	}
@@ -57,13 +55,6 @@ public class Person extends Customer {
 	}
 	public void removePhone(Phone ph) {
 		numbers.remove(ph);
-	}
-
-	public void addLicense(LicenseClass lc) {
-		licenses.add(lc);
-	}
-	public void removeLicense(LicenseClass lc) {
-		licenses.remove(lc);
 	}
 
 	public String getFirstname() {
@@ -126,18 +117,19 @@ public class Person extends Customer {
 		config.common().objectClass(Customer.class).objectField("id").indexed(true);
 		config.common().add(new UniqueFieldValueConstraint(Person.class, "id"));
 	}
-	
-	public boolean objectCanNew (ObjectContainer container) throws Db4oException {
+
+	private boolean checkConstraints() {
 		if (this.lastname == null) throw new Db4oException("A person must have a last name!");
 		Date today = new Date();
 		if (this.dateOfBirth != null) if (this.dateOfBirth.after(today)) throw new Db4oException("<dob> must not be in the future!");
 		return true;
 	}
 
+	public boolean objectCanNew (ObjectContainer container) throws Db4oException {
+		return checkConstraints();
+	}
+
 	public boolean objectCanUpdate (ObjectContainer container) throws Db4oException {
-		if (this.lastname == null) throw new Db4oException("A person must have a last name!");
-		Date today = new Date();
-		if (this.dateOfBirth != null) if (this.dateOfBirth.after(today)) throw new Db4oException("<dob> must not be in the future!");
-		return true;
+		return checkConstraints();
 	}
 }
