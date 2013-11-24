@@ -31,6 +31,9 @@ public class Branch {
 		setPhone(phone);
 	}
 
+	public Branch() {
+	}
+
 	public String getName() {
 		return name;
 	}

@@ -10,6 +10,7 @@ import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.config.CommonConfigurationProvider;
 import com.db4o.config.EmbeddedConfiguration;
+import com.db4o.query.Predicate;
 
 import de.hrw.mdbt.model.Address;
 import de.hrw.mdbt.model.Branch;
@@ -63,15 +64,19 @@ public class CRSOperations {
 				new Address("DefaultState", "DefaultCity", "DefaultStreet", "123456", "DefaultType"),
 				Time.valueOf("9:0:0"), Time.valueOf("17:0:0"),
 				"0123456789");
-		Calendar c1 = new GregorianCalendar(2013, 1, 1);
+		Calendar c1a = new GregorianCalendar(2012, 1, 1);
+		Calendar c1b = new GregorianCalendar(2012, 6, 1);
+		Calendar c1c = new GregorianCalendar(2013, 1, 1);
 		Model m1 = new Model();
 		PriceClass pc1 = new PriceClass("TooCheapToDrive", "Good Luck!", 10, 2, 3);
-		VehicleGroup vg1 = new VehicleGroup(100, "Diesel", c1.getTime(), "Blue Metallic", m1, pc1);
-		new Vehicle("RV-DE-0001","1",1,b1,vg1);
-		new Vehicle("RV-FA-0002","2",10,b1,vg1);
-		new Vehicle("RV-UL-0003","3",100,b1,vg1);
-		new Vehicle("RV-T-0004","4",1000,b1,vg1);
-		Calendar c2 = new GregorianCalendar(2012, 1, 1);
+		VehicleGroup vg1a = new VehicleGroup(100, "Diesel", c1a.getTime(), "Blue Metallic", m1, pc1);
+		VehicleGroup vg1b = new VehicleGroup(100, "Diesel", c1b.getTime(), "Green Metallic", m1, pc1);
+		VehicleGroup vg1c = new VehicleGroup(100, "Diesel", c1c.getTime(), "Red Metallic", m1, pc1);
+		new Vehicle("RV-DE-0001","1",1,b1,vg1a);
+		new Vehicle("RV-FA-0002","2",10,b1,vg1b);
+		new Vehicle("RV-UL-0003","3",100,b1,vg1b);
+		new Vehicle("RV-T-0004","4",1000,b1,vg1c);
+		Calendar c2 = new GregorianCalendar(2012, 1, 2);
 		Model m2 = new Model();
 		PriceClass pc2 = new PriceClass("TooSlowToDrive", "Take Your Time!", 1, 10, 100);
 		VehicleGroup vg2 = new VehicleGroup(10, "Benzin", c2.getTime(), "Blue Metallic", m2, pc2);
@@ -103,9 +108,22 @@ public class CRSOperations {
 		db.commit();
 	}
 
-	public static ObjectSet <VehicleGroup> createOffer(ObjectContainer db, Branch b, Date startDate, Date endDate, PriceClass pc)	{
-		return null;
-		//TODO: implement
+	public static ObjectSet<VehicleGroup> createOffer(ObjectContainer db, final Branch b, final Date startDate, final Date endDate, final PriceClass pc) {
+		@SuppressWarnings("serial")
+		ObjectSet<VehicleGroup> result = db.query(new Predicate<VehicleGroup>() {
+			public boolean match(VehicleGroup vg) {
+				if( vg.getPriceClass() == pc
+						&& vg.getPurchaseDate().compareTo(startDate) >= 0
+						&& vg.getPurchaseDate().compareTo(endDate) <= 0) {
+					for(Vehicle v : vg.getVehicles()) {
+						if(v.getBranch() == b)
+							return true;
+					}
+				}
+				return false;
+			}
+        });
+		return result;
 	}
 
 	public static int createReservation(ObjectContainer db, Customer c, Branch b, VehicleGroup vg, Date startDate, Date endDate) {
