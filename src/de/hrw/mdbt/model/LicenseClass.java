@@ -4,6 +4,14 @@ public class LicenseClass {
 	private String abbreviation;
 	private String description;
 
+	public LicenseClass() {
+	}
+
+	public LicenseClass(String abbreviation, String description) {
+		this.abbreviation = abbreviation;
+		this.description = description;
+	}
+
 	public String getAbbreviation() {
 		return abbreviation;
 	}

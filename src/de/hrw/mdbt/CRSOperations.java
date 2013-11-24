@@ -16,9 +16,11 @@ import de.hrw.mdbt.model.Address;
 import de.hrw.mdbt.model.Branch;
 import de.hrw.mdbt.model.Company;
 import de.hrw.mdbt.model.Customer;
+import de.hrw.mdbt.model.LicenseClass;
 import de.hrw.mdbt.model.Model;
 import de.hrw.mdbt.model.Person;
 import de.hrw.mdbt.model.PriceClass;
+import de.hrw.mdbt.model.Rental;
 import de.hrw.mdbt.model.Vehicle;
 import de.hrw.mdbt.model.VehicleGroup;
 
@@ -60,22 +62,35 @@ public class CRSOperations {
 	}
 
 	public static void fillDBDefaults(ObjectContainer db) {
+		Calendar c4 = new GregorianCalendar(2000, 1, 1);
+		Person p1 = new Person(1, "Max", "", "Mad", "?", "", c4.getTime(), "m");
+		db.store(p1);
+
+		Company cy1 = new Company(2,"Knight Industries");
+		db.store(cy1);
+
 		Branch b1 = new Branch("DefaultBranch",
 				new Address("DefaultState", "DefaultCity", "DefaultStreet", "123456", "DefaultType"),
 				Time.valueOf("9:0:0"), Time.valueOf("17:0:0"),
 				"0123456789");
+
 		Calendar c1a = new GregorianCalendar(2012, 1, 1);
 		Calendar c1b = new GregorianCalendar(2012, 6, 1);
 		Calendar c1c = new GregorianCalendar(2013, 1, 1);
-		Model m1 = new Model();
+		Calendar c1d = new GregorianCalendar(2013, 6, 1);
+		LicenseClass l1 = new LicenseClass("Ordinary","lame");
+		Model m1 = new Model("IKEA","Hans",100,"metric",l1);
 		PriceClass pc1 = new PriceClass("TooCheapToDrive", "Good Luck!", 10, 2, 3);
 		VehicleGroup vg1a = new VehicleGroup(100, "Diesel", c1a.getTime(), "Blue Metallic", m1, pc1);
 		VehicleGroup vg1b = new VehicleGroup(100, "Diesel", c1b.getTime(), "Green Metallic", m1, pc1);
 		VehicleGroup vg1c = new VehicleGroup(100, "Diesel", c1c.getTime(), "Red Metallic", m1, pc1);
-		new Vehicle("RV-DE-0001","1",1,b1,vg1a);
+		Vehicle v1 = new Vehicle("RV-DE-0001","1",1,b1,vg1a);
+		new Rental(c1a.getTime(), c1b.getTime(), v1, p1);
+		new Rental(c1c.getTime(), c1d.getTime(), v1, cy1);
 		new Vehicle("RV-FA-0002","2",10,b1,vg1b);
 		new Vehicle("RV-UL-0003","3",100,b1,vg1b);
 		new Vehicle("RV-T-0004","4",1000,b1,vg1c);
+
 		Calendar c2 = new GregorianCalendar(2012, 1, 2);
 		Model m2 = new Model();
 		PriceClass pc2 = new PriceClass("TooSlowToDrive", "Take Your Time!", 1, 10, 100);
@@ -91,19 +106,13 @@ public class CRSOperations {
 				Time.valueOf("8:0:0"), Time.valueOf("16:0:0"),
 				"0234567891");
 		Calendar c3 = new GregorianCalendar(2013, 1, 2);
-		Model m3 = new Model();
+		LicenseClass l2 = new LicenseClass("TestPilot","WhatIsThisButtonFor?");
+		Model m3 =  new Model("Black&Decker","NX01",200,"metric",l2);
 		PriceClass pc3 = new PriceClass("IAmBatMan", "NANANANANANANANANANANANANANANANANANA BATMAAAN!!!", 0, 999, 9999);
 		VehicleGroup vg3 = new VehicleGroup(100, "Diesel", c3.getTime(), "Blue Metallic", m3, pc3);
-		new Vehicle("FN-BM-0001","1",1,b2,vg3);
-		new Vehicle("FN-RB-0002","2",10,b2,vg3);
+		Vehicle v2 = new Vehicle("FN-BM-0001","1",1,b2,vg3);
+		new Rental(c1a.getTime(), c1d.getTime(), v2, cy1);
 		db.store(b2);
-		
-		Calendar c4 = new GregorianCalendar(2000, 1, 1);
-		Person p1 = new Person(1, "Max", "", "Mad", "?", "", c4.getTime(), "m");
-		db.store(p1);
-
-		Company cy1 = new Company(2,"Knight Industries");
-		db.store(cy1);
 
 		db.commit();
 	}
@@ -111,23 +120,29 @@ public class CRSOperations {
 	public static ObjectSet<VehicleGroup> createOffer(ObjectContainer db, final Branch b, final Date startDate, final Date endDate, final PriceClass pc) {
 		@SuppressWarnings("serial")
 		ObjectSet<VehicleGroup> result = db.query(new Predicate<VehicleGroup>() {
+			@Override
 			public boolean match(VehicleGroup vg) {
-				if( vg.getPriceClass() == pc
-						&& vg.getPurchaseDate().compareTo(startDate) >= 0
-						&& vg.getPurchaseDate().compareTo(endDate) <= 0) {
-					for(Vehicle v : vg.getVehicles()) {
-						if(v.getBranch() == b)
-							return true;
+				if( vg.getPriceClass() != pc) return false;
+				for(Vehicle v : vg.getVehicles()) {
+					if(v.getBranch() != b) continue;
+					boolean overlap = false;
+					for(Rental r : v.getRentals()) {
+						// check next vehicle if any rental overlaps
+						if(r.getStartDate().getTime() <= endDate.getTime() && startDate.getTime() <= r.getEndDate().getTime())
+							overlap = true;
 					}
+					if(!overlap)
+						return true;
 				}
+				// no possible vehicles found
 				return false;
 			}
-        });
+		});
 		return result;
 	}
 
 	public static int createReservation(ObjectContainer db, Customer c, Branch b, VehicleGroup vg, Date startDate, Date endDate) {
-		return 0;
 		//TODO: implement
+		return 0;
 	}
 }

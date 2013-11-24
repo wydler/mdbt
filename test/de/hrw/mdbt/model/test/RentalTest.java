@@ -24,11 +24,11 @@ import de.hrw.mdbt.model.Rental;
 import de.hrw.mdbt.model.Vehicle;
 
 public class RentalTest {
-	
+
 	private static final String DB_TESTFILE = "RentalTest.db4o";
 
 	private static ObjectContainer db;
-	
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		Files.deleteIfExists(Paths.get(DB_TESTFILE));
@@ -36,12 +36,12 @@ public class RentalTest {
 		config = Db4oEmbedded.newConfiguration();
 		db = Db4oEmbedded.openFile(config, DB_TESTFILE);
 	}
-	
+
 	@AfterClass
 	public static void tearDownAfterClass(){
 		db.close();
 	}
-	
+
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -55,31 +55,31 @@ public class RentalTest {
 	public void testRental() {
 		Vehicle v = new Vehicle("BC-BC 1234", "1234567890", 10, null, null);
 		Customer c = new Customer(1);
-		Rental r = new Rental(new Date(), 10, v, c);
-		
+		Rental r = new Rental(new Date(), new Date(), v, c);
+
 		db.store(r);
-		
+
 		ObjectSet<Rental> allPersons = db.queryByExample(Rental.class);
 		assertEquals("Store simple person", 1, allPersons.size());
 	}
-	
+
 	@Test
 	public void testRentalNoVehicle() {
 		Customer c = new Customer(1);
-		Rental r = new Rental(new Date(), 10, null, c);
-		
+		Rental r = new Rental(new Date(), new Date(), null, c);
+
 		try {
 			db.store(r);
 		} catch(Db4oException ex) {
 			assertNotNull(ex);
 		}
 	}
-	
+
 	@Test
 	public void testRentalNoCustomer() {
 		Vehicle v = new Vehicle("BC-BC 1234", "1234567890", 10, null, null);
-		Rental r = new Rental(new Date(), 10, v, null);
-		
+		Rental r = new Rental(new Date(), new Date(), v, null);
+
 		try {
 			db.store(r);
 		} catch(Db4oException ex) {

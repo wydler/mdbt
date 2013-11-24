@@ -14,12 +14,12 @@ public class Rental {
 	private Vehicle vehicle;
 	private Customer customer;
 	private String status;
-	
-	public Rental(Date start, int startKm, Vehicle v, Customer c) {
-		this.startDate = start;
-		this.startKm = startKm;
-		this.vehicle = v;
-		this.customer = c;
+
+	public Rental(Date start, Date end, Vehicle v, Customer c) {
+		setStartDate(start);
+		setEndDate(end);
+		setVehicle(v);
+		setCustomer(c);
 	}
 
 	public Date getStartDate() {
@@ -51,6 +51,11 @@ public class Rental {
 	}
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
+		if (this.vehicle != null)
+			this.vehicle.removeRental(this);
+		this.vehicle = vehicle;
+		if (vehicle != null)
+			vehicle.addRental(this);
 	}
 	public String getStatus() {
 		return status;
@@ -64,16 +69,16 @@ public class Rental {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
-	
+
 	public static void configure(CommonConfigurationProvider config) {
 	}
-	
+
 	public boolean objectCanNew (ObjectContainer container) throws Db4oException {
 		if(this.customer == null) throw new Db4oException("Customer cannot be null!");
 		if(this.startDate == null) throw new Db4oException("Start date cannot be null!");
 		if(this.startKm < 0) throw new Db4oException("Start KM cannot be smaller 0!");
 		if(this.vehicle == null) throw new Db4oException("Vehicle cannot be null!");
-		
+
 		return true;
 	}
 }

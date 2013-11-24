@@ -3,9 +3,20 @@ package de.hrw.mdbt.model;
 public class Model {
 	private String manufacturer;
 	private String name;
-	private VehicleGroup group;
 	private int capacity;
 	private String measure;
+	private LicenseClass requiredLicense;
+
+	public Model() {
+	}
+
+	public Model(String manufacturer, String name, int capacity, String measure, LicenseClass requiredLicense) {
+		setManufacturer(manufacturer);
+		setName(name);
+		setCapacity(capacity);
+		setMeasure(measure);
+		setRequiredLicense(requiredLicense);
+	}
 
 	public String getManufacturer() {
 		return manufacturer;
@@ -19,12 +30,6 @@ public class Model {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public VehicleGroup getGroup() {
-		return group;
-	}
-	public void setGroup(VehicleGroup group) {
-		this.group = group;
-	}
 	public int getCapacity() {
 		return capacity;
 	}
@@ -36,5 +41,11 @@ public class Model {
 	}
 	public void setMeasure(String measure) {
 		this.measure = measure;
+	}
+	public LicenseClass getRequiredLicense() {
+		return requiredLicense;
+	}
+	public void setRequiredLicense(LicenseClass requiredLicense) {
+		this.requiredLicense = requiredLicense;
 	}
 }

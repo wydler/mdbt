@@ -6,16 +6,15 @@ import com.db4o.ObjectContainer;
 import com.db4o.config.CommonConfigurationProvider;
 import com.db4o.constraints.UniqueFieldValueConstraint;
 
-import de.hrw.mdbt.model.Branch;
-
 public class Vehicle {
 	private String licenseNumber;
 	private String insuranceNumber;
 	private int actualKm;
 	private Branch branch;
 	private VehicleGroup vehicleGroup;
-	private ArrayList<Report> reports;
-	
+	private ArrayList<Report> reports = new ArrayList<Report>();
+	private ArrayList<Rental> rentals = new ArrayList<Rental>();
+
 	public Vehicle(String licenseNumber, String insuranceNumber, int actualKm, Branch branch, VehicleGroup vehicleGroup) {
 		setLicenseNumber(licenseNumber);
 		setInsuranceNumber(insuranceNumber);
@@ -70,7 +69,17 @@ public class Vehicle {
 	public void setReports(ArrayList<Report> reports) {
 		this.reports = reports;
 	}
-	
+
+	public ArrayList<Rental> getRentals() {
+		return rentals;
+	}
+	protected void addRental(Rental rental) {
+		this.rentals.add(rental);
+	}
+	protected void removeRental(Rental rental) {
+		this.rentals.remove(rental);
+	}
+
 	public static void configure( CommonConfigurationProvider config ) {
 		config.common().objectClass(Vehicle.class).objectField("licenseNumber").indexed(true);
 		config.common().add(new UniqueFieldValueConstraint(Vehicle.class, "licenseNumber"));
@@ -79,7 +88,7 @@ public class Vehicle {
 	private boolean checkConstraints() {
 		if (this.licenseNumber == null)
 			return false;
-		if (this.insuranceNumber == null) 
+		if (this.insuranceNumber == null)
 			return false;
 		if (this.branch == null)
 			return false;
@@ -111,6 +120,7 @@ public class Vehicle {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return
 				"--------Vehicle--------\n" +

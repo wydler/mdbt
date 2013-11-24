@@ -65,7 +65,7 @@ public class CRSOperationsTest {
 		assertEquals(1,pcs.size());
 		PriceClass pc = pcs.get(0);
 
-		Calendar start = new GregorianCalendar(2011, 1, 1);
+		Calendar start = new GregorianCalendar(2013, 12, 1);
 		Calendar end = new GregorianCalendar(2014, 1, 1);
 
 		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
@@ -74,7 +74,7 @@ public class CRSOperationsTest {
 	}
 
 	@Test
-	public void testCreateOfferDatesAreInclusive() {
+	public void testCreateOfferDateRangesAreExclusive() {
 		Branch bExample = new Branch();
 		bExample.setName("DefaultBranch");
 		ObjectSet<Branch> bs = ops.getDb().queryByExample(bExample);
@@ -87,52 +87,38 @@ public class CRSOperationsTest {
 		assertEquals(1,pcs.size());
 		PriceClass pc = pcs.get(0);
 
-		Calendar start = new GregorianCalendar(2012, 1, 1);
-		Calendar end = new GregorianCalendar(2013, 1, 1);
-
+		Calendar start = new GregorianCalendar(2012, 6, 2);
+		Calendar end = new GregorianCalendar(2012, 12, 31);
 		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
-
 		assertEquals(3,vgs.size());
+
+		start = new GregorianCalendar(2012, 6, 1);
+		end = new GregorianCalendar(2012, 12, 31);
+		vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
+		assertEquals(2,vgs.size());
+
+		start = new GregorianCalendar(2012, 6, 2);
+		end = new GregorianCalendar(2013, 1, 1);
+		vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
+		assertEquals(2,vgs.size());
 	}
 
 	@Test
-	public void testCreateOfferFiltersDates() {
+	public void testCreateOfferNoDateMatch() {
 		Branch bExample = new Branch();
-		bExample.setName("DefaultBranch");
+		bExample.setName("AnotherDefaultBranch");
 		ObjectSet<Branch> bs = ops.getDb().queryByExample(bExample);
 		assertEquals(1,bs.size());
 		Branch b = bs.get(0);
 
 		PriceClass pcExample = new PriceClass();
-		pcExample.setName("TooCheapToDrive");
-		ObjectSet<PriceClass> pcs = ops.getDb().queryByExample(pcExample);
-		assertEquals(1,pcs.size());
-		PriceClass pc = pcs.get(0);
-
-		Calendar start = new GregorianCalendar(2012, 5, 1);
-		Calendar end = new GregorianCalendar(2012, 7, 1);
-
-		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
-
-		assertEquals(1,vgs.size());
-	}
-
-	@Test
-	public void testCreateOfferWorksOnNoMatch() {
-		Branch bExample = new Branch();
-		bExample.setName("DefaultBranch");
-		ObjectSet<Branch> bs = ops.getDb().queryByExample(bExample);
-		assertEquals(1,bs.size());
-		Branch b = bs.get(0);
-
-		PriceClass pcExample = new PriceClass();
-		pcExample.setName("TooCheapToDrive");
+		pcExample.setName("IAmBatMan");
 		ObjectSet<PriceClass> pcs = ops.getDb().queryByExample(pcExample);
 		assertEquals(1,pcs.size());
 		PriceClass pc = pcs.get(0);
 
 		Calendar start = new GregorianCalendar(2011, 1, 1);
-		Calendar end = new GregorianCalendar(2011, 2, 1);
+		Calendar end = new GregorianCalendar(2014, 1, 1);
 
 		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
 
