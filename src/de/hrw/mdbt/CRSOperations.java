@@ -119,6 +119,8 @@ public class CRSOperations {
 	}
 
 	public static ObjectSet<VehicleGroup> createOffer(ObjectContainer db, final Branch b, final Date startDate, final Date endDate, final PriceClass pc) {
+		if(b==null || pc==null || startDate.after(endDate) )
+			return null;
 		@SuppressWarnings("serial")
 		ObjectSet<VehicleGroup> result = db.query(new Predicate<VehicleGroup>() {
 			@Override

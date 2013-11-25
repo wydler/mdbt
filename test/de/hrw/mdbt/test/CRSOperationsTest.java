@@ -133,6 +133,28 @@ public class CRSOperationsTest {
 	}
 
 	@Test
+	public void testCreateOfferInvalidDate() {
+		Branch bExample = new Branch();
+		bExample.setName("AnotherDefaultBranch");
+		ObjectSet<Branch> bs = ops.getDb().queryByExample(bExample);
+		assertEquals(1,bs.size());
+		Branch b = bs.get(0);
+
+		PriceClass pcExample = new PriceClass();
+		pcExample.setName("IAmBatMan");
+		ObjectSet<PriceClass> pcs = ops.getDb().queryByExample(pcExample);
+		assertEquals(1,pcs.size());
+		PriceClass pc = pcs.get(0);
+
+		Calendar start = new GregorianCalendar(2012, 6, 2);
+		Calendar end = new GregorianCalendar(2012, 12, 31);
+
+		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, end.getTime(), start.getTime(), pc);
+
+		assertEquals(null,vgs);
+	}
+
+	@Test
 	public void testCreateReservation() {
 		Person pExample = new Person();
 		pExample.setFirstname("Max");
@@ -190,6 +212,34 @@ public class CRSOperationsTest {
 		int numRentals = ops.getDb().query(Rental.class).size();
 
 		boolean ret = ops.createReservation(null, b, vgs.get(0), start.getTime(), end.getTime());
+		assertTrue(!ret);
+
+		assertEquals(numRentals,ops.getDb().query(Rental.class).size());
+	}
+
+	@Test
+	public void testCreateReservationInvalidDate() {
+		Branch bExample = new Branch();
+		bExample.setName("DefaultBranch");
+		ObjectSet<Branch> bs = ops.getDb().queryByExample(bExample);
+		assertEquals(1,bs.size());
+		Branch b = bs.get(0);
+
+		PriceClass pcExample = new PriceClass();
+		pcExample.setName("TooCheapToDrive");
+		ObjectSet<PriceClass> pcs = ops.getDb().queryByExample(pcExample);
+		assertEquals(1,pcs.size());
+		PriceClass pc = pcs.get(0);
+
+		Calendar start = new GregorianCalendar(2013, 11, 1);
+		Calendar end = new GregorianCalendar(2014, 1, 1);
+
+		ObjectSet<VehicleGroup> vgs = ops.createOffer(b, start.getTime(), end.getTime(), pc);
+		assertEquals(3,vgs.size());
+
+		int numRentals = ops.getDb().query(Rental.class).size();
+
+		boolean ret = ops.createReservation(null, b, vgs.get(0), end.getTime(), start.getTime());
 		assertTrue(!ret);
 
 		assertEquals(numRentals,ops.getDb().query(Rental.class).size());
