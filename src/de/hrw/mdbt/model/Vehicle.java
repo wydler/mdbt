@@ -14,7 +14,7 @@ public class Vehicle {
 	private VehicleGroup vehicleGroup;
 	private ArrayList<Report> reports = new ArrayList<Report>();
 	private ArrayList<Rental> rentals = new ArrayList<Rental>();
-
+	
 	public Vehicle(String licenseNumber, String insuranceNumber, int actualKm, Branch branch, VehicleGroup vehicleGroup) {
 		setLicenseNumber(licenseNumber);
 		setInsuranceNumber(insuranceNumber);
