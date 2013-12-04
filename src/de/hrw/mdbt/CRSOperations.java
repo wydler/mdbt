@@ -54,6 +54,14 @@ public class CRSOperations {
 		return createReservation(this.db, c, b, vg, startDate, endDate);
 	}
 
+	private static boolean lock(ObjectContainer db) {
+		return db.ext().setSemaphore("global", 1000);
+	}
+
+	private static void unlock(ObjectContainer db) {
+		db.ext().releaseSemaphore("global");
+	}
+
 	public static void configureAll(CommonConfigurationProvider config) {
 		if(config == null)
 			return;
@@ -150,34 +158,52 @@ public class CRSOperations {
 	public static boolean createReservation(ObjectContainer db, Customer c, Branch b, VehicleGroup vg, Date startDate, Date endDate) {
 		if(c==null || b==null || vg==null || startDate.after(endDate) )
 			return false;
-		boolean licenseOk = false;
-		for(LicenseClass lc : c.getLicenses())
-			if(lc == vg.getModel().getRequiredLicense())
-				licenseOk = true;
-		if(!licenseOk)
-			return false;
 
-		Vehicle selectedVehicle = null;
-		for(Vehicle v : vg.getVehicles()) {
-			if(v.getBranch() != b) continue;
-			boolean overlap = false;
-			for(Rental r : v.getRentals()) {
-				// check next vehicle if any rental overlaps
-				if(r.getStartDate().getTime() <= endDate.getTime() && startDate.getTime() <= r.getEndDate().getTime())
-				{
-					overlap = true;
-					break;
-				}
+		boolean hasLock = lock(db);
+		try
+		{
+			if(!hasLock)
+			{
+				System.out.println("Database lock failed!\n");
+				return false;
 			}
-			if(!overlap)
-				selectedVehicle = v;
+
+			boolean licenseOk = false;
+			for(LicenseClass lc : c.getLicenses())
+				if(lc == vg.getModel().getRequiredLicense())
+					licenseOk = true;
+			if(!licenseOk)
+			{
+				System.out.println(c.toString()+"has no matching license.\n");
+				return false;
+			}
+
+			Vehicle selectedVehicle = null;
+			for(Vehicle v : vg.getVehicles()) {
+				if(v.getBranch() != b) continue;
+				boolean overlap = false;
+				for(Rental r : v.getRentals()) {
+					// check next vehicle if any rental overlaps
+					if(r.getStartDate().getTime() <= endDate.getTime() && startDate.getTime() <= r.getEndDate().getTime())
+					{
+						overlap = true;
+						break;
+					}
+				}
+				if(!overlap)
+					selectedVehicle = v;
+			}
+
+			Rental r = new Rental(startDate, endDate, selectedVehicle, c);
+			db.store(r);
+
+			System.out.println(c.toString()+"just rent:\n"+selectedVehicle.toString()+":\n"+r.toString()+"\n");
+
+			return true;
 		}
-
-		Rental r = new Rental(startDate, endDate, selectedVehicle, c);
-		db.store(r);
-
-		System.out.println(c.toString()+"just rent:\n"+selectedVehicle.toString()+":\n"+r.toString()+"\n");
-
-		return true;
+		finally
+		{
+			unlock(db);
+		}
 	}
 }
