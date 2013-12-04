@@ -40,7 +40,7 @@ public class CRS {
 		Scanner input = new Scanner(System.in);
 		String s = "";
 		
-		while(s != "q") {
+		while(!s.equals("q")) {
 			db.ext().setSemaphore("reservation", 1000);
 			
 			System.out.println("Branch auswählen:");
