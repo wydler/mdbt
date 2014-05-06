@@ -1,4 +1,4 @@
-mdbt
+MDBT
 ====
 
-Modern Database Techniques
+An exercise in modern database techniques with db4o.
